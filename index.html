@@ -16,20 +16,17 @@
             min-height: 100vh;
             margin: 0;
             padding: 20px;
-            overflow-x: hidden;
         }
 
-        /* الدخلة السينمائية للموقع */
         .container {
-            background: rgba(25, 20, 15, 0.95);
+            background: rgba(25, 20, 15, 0.98);
             padding: 35px;
             width: 100%;
             max-width: 420px;
             border: 4px solid #8c734c;
             text-align: center;
             box-shadow: 0 0 50px rgba(0,0,0,0.8);
-            position: relative;
-            animation: cinematicFade 1.8s ease-out; /* الأنيميشن السينمائي */
+            animation: cinematicFade 1.8s ease-out;
         }
 
         h1 {
@@ -37,7 +34,6 @@
             color: #c9a063;
             font-size: 2.2rem;
             margin-bottom: 5px;
-            text-transform: uppercase;
             letter-spacing: 5px;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.8);
         }
@@ -47,28 +43,23 @@
             color: #8c734c;
             font-size: 0.8rem;
             margin-bottom: 25px;
-            letter-spacing: 2px;
             border-bottom: 1px solid #c9a063;
             display: inline-block;
             padding-bottom: 5px;
         }
 
-        /* تحسين صندوق البحث ليصبح بخط كلاسيكي */
         input {
             width: 90%;
             padding: 15px;
             background: #120f0a;
             border: 1px solid #5c4a31;
-            color: #c9a063; /* لون الخط ذهبي عند الكتابة */
-            font-family: 'Cinzel', serif; /* الخط الكلاسيكي في البحث */
+            color: #c9a063;
+            font-family: 'Cinzel', serif;
             font-size: 1rem;
             margin-bottom: 20px;
             text-align: center;
             outline: none;
-            transition: 0.3s;
         }
-
-        input:focus { border-color: #c9a063; box-shadow: 0 0 10px rgba(201, 160, 99, 0.3); }
 
         button {
             width: 100%;
@@ -78,13 +69,9 @@
             border: 1px solid #c9a063;
             font-family: 'Cinzel', serif;
             font-weight: bold;
-            font-size: 1rem;
             cursor: pointer;
             text-transform: uppercase;
-            transition: 0.3s;
         }
-
-        button:hover { background: #c9a063; transform: scale(1.02); }
 
         .result {
             display: none;
@@ -96,50 +83,56 @@
             animation: slideDown 0.8s ease-out;
         }
 
-        /* الإحصائيات تحت بعضها */
         .stat-item {
             display: flex;
             justify-content: space-between;
-            align-items: center;
-            padding: 12px 0;
+            padding: 10px 0;
             border-bottom: 1px solid rgba(140, 115, 76, 0.3);
         }
 
-        .label {
-            font-family: 'Cinzel', serif;
-            color: #8c734c;
-            font-size: 0.75rem;
-            text-transform: uppercase;
+        .label { font-family: 'Cinzel', serif; color: #8c734c; font-size: 0.75rem; }
+        .value { font-family: 'Cinzel', serif; color: #f0e68c; font-size: 0.9rem; }
+
+        .footer-section {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 2px solid #5c4a31;
         }
 
-        .value {
-            font-family: 'Cinzel', serif; /* الخط الكلاسيكي لاسم اللاعب والقيم */
-            color: #f0e68c;
-            font-size: 1rem;
-            font-weight: bold;
+        .links-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-bottom: 20px;
         }
 
-        .scanning {
+        .official-link {
             color: #c9a063;
-            font-style: italic;
-            animation: pulse 1.5s infinite;
+            text-decoration: none;
+            font-family: 'Cinzel', serif;
+            font-size: 0.85rem;
+            letter-spacing: 1px;
+            transition: 0.3s;
         }
 
-        /* تعريف حركات الأنيميشن */
+        .official-link:hover { color: #f0e68c; text-decoration: underline; }
+
+        .dev-credit {
+            font-size: 0.8rem;
+            color: #8c734c;
+            font-family: 'Cinzel', serif;
+        }
+
+        .dev-name { color: #c9a063; font-weight: bold; }
+
         @keyframes cinematicFade {
-            from { opacity: 0; transform: scale(0.8) translateY(30px); filter: blur(10px); }
+            from { opacity: 0; transform: scale(0.9) translateY(20px); filter: blur(5px); }
             to { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
         }
 
         @keyframes slideDown {
-            from { opacity: 0; transform: translateY(-20px); }
+            from { opacity: 0; transform: translateY(-10px); }
             to { opacity: 1; transform: translateY(0); }
-        }
-
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.5; }
-            100% { opacity: 1; }
         }
     </style>
 </head>
@@ -149,22 +142,34 @@
         <h1>Empire Clash</h1>
         <div class="subtitle">Royal Military Archives</div>
         
-        <p style="color: #b0b0cc; font-size: 0.9rem; margin-bottom: 20px; font-style: italic;">Consult the ledger for service records, Commander.</p>
+        <p style="color: #b0b0cc; font-size: 0.9rem; margin-bottom: 20px; font-style: italic;">Consult the archives for service records.</p>
         
         <input type="text" id="playerID" placeholder="Enter Soldier Name...">
         <button onclick="getStats()">Consult Archives</button>
 
         <div id="resultArea" class="result">
             <div class="stat-item"><span class="label">Soldier:</span><span class="value" id="resName">---</span></div>
-            <div class="stat-item"><span class="label">Time in Service:</span><span class="value scanning">Scanning...</span></div>
-            <div class="stat-item"><span class="label">Campaign Kills:</span><span class="value scanning">Scanning...</span></div>
-            <div class="stat-item"><span class="label">Casualties (Deaths):</span><span class="value scanning">Scanning...</span></div>
-            <div class="stat-item"><span class="label">Crowns Earned:</span><span class="value scanning">Scanning...</span></div>
-            <div class="stat-item"><span class="label">Gold Reserves:</span><span class="value scanning">Scanning...</span></div>
-            <div class="stat-item"><span class="label">Battles Won:</span><span class="value scanning">Scanning...</span></div>
-            <div class="stat-item"><span class="label">Battles Lost:</span><span class="value scanning">Scanning...</span></div>
-            <div class="stat-item"><span class="label">Monarchies Held:</span><span class="value scanning">Scanning...</span></div>
-            <div class="stat-item"><span class="label">Bodies Buried:</span><span class="value scanning">Scanning...</span></div>
+            <div class="stat-item"><span class="label">Time in Service:</span><span class="value">Searching...</span></div>
+            <div class="stat-item"><span class="label">Campaign Kills:</span><span class="value">Searching...</span></div>
+            <div class="stat-item"><span class="label">Casualties (Deaths):</span><span class="value">Searching...</span></div>
+            <div class="stat-item"><span class="label">Crowns Earned:</span><span class="value">Searching...</span></div>
+            <div class="stat-item"><span class="label">Gold Reserves:</span><span class="value">Searching...</span></div>
+            <div class="stat-item"><span class="label">Battles Won:</span><span class="value">Searching...</span></div>
+            <div class="stat-item"><span class="label">Battles Lost:</span><span class="value">Searching...</span></div>
+            <div class="stat-item"><span class="label">Monarchies Held:</span><span class="value">Searching...</span></div>
+            <div class="stat-item"><span class="label">Bodies Buried:</span><span class="value">Searching...</span></div>
+        </div>
+
+        <div class="footer-section">
+            <div class="links-container">
+                <a href="https://www.roblox.com/games/9588998913/Empire-Clash" target="_blank" class="official-link">⚔️ Play Empire Clash</a>
+                <a href="https://discord.gg/empireclash" target="_blank" class="official-link">🏰 Official Discord</a>
+                <a href="https://www.roblox.com/groups/13025287/Empire-Clash-Community#!/about" target="_blank" class="official-link">🚩 Roblox Community Group</a>
+            </div>
+            
+            <div class="dev-credit">
+                Lead Architect: <span class="dev-name">sofian_gg</span>
+            </div>
         </div>
     </div>
 
@@ -172,7 +177,6 @@
         function getStats() {
             const id = document.getElementById('playerID').value;
             if(!id) return alert("The archives require a name!");
-
             document.getElementById('resultArea').style.display = 'block';
             document.getElementById('resName').innerText = id;
         }
