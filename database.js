@@ -6,7 +6,7 @@ const verifiedSoldiers = {
         wins: "206", losses: "97", time: "496h", buried: "714" 
     },
     
-    "player_test_1": { kills: "100", deaths: "50", gold: "5K", crowns: "1", wins: "3", losses: "1", time: "2h", buried: "5" },
+    "interbirb": { kills: "6228", deaths: "4299", gold: "8098972", crowns: "1199", wins: "410", losses: "123", time: "1040", buried: "2209" },
     
     "player_test_2": { kills: "250", deaths: "80", gold: "15K", crowns: "4", wins: "10", losses: "3", time: "8h", buried: "20" },
     
