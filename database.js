@@ -6,9 +6,9 @@ const verifiedSoldiers = {
         wins: "206", losses: "97", time: "496h", buried: "714" 
     },
     
-    "interbirb": { kills: "6228", deaths: "4299", gold: "8098972", crowns: "1199", wins: "410", losses: "123", time: "1040", buried: "2209" },
+    "interbirb": { kills: "6228", deaths: "4299", gold: "8098972", crowns: "1199", wins: "410", losses: "123", time: "1040h", buried: "2209" },
     
-    "player_test_2": { kills: "250", deaths: "80", gold: "15K", crowns: "4", wins: "10", losses: "3", time: "8h", buried: "20" },
+    "kaboom_watereggs": { kills: "17206", deaths: "6650", gold: "1414949542", crowns: "2874", wins: "988", losses: "266", time: "2350h", buried: "441" },
     
     "player_test_3": { kills: "500", deaths: "120", gold: "30K", crowns: "10", wins: "20", losses: "5", time: "15h", buried: "45" },
     
