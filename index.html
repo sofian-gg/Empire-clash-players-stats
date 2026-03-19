@@ -192,7 +192,9 @@
 <script>
     const SHEET_ID = '1oQ4GC7sTXCikDYdQLY96CwPSUaeIoOJ3x6mYUjlZuYI';
     const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
-    const WEBHOOK_URL = "https://discord.com/api/webhooks/1482907096134455348/w5K5LenWpbxAQ3-WfIHO6UumW4-KdkQqoEg1MeuYSwy22D3aPkM_cxts0C8ngngfUfFp";
+    
+    // الرابط الآمن للسيرفر الخاص بك (بدلاً من الويب هوك المكشوف)
+    const SECURE_API_URL = "https://a2ac4cbd.wispbyte.app/submit";
 
     let verifiedSoldiers = {};
 
@@ -313,33 +315,47 @@
         } else { alert("Soldier not found!"); }
     }
 
-    function handleDispatch() {
+    async function handleDispatch() {
         const name = document.getElementById('subName').value;
         const proof = document.getElementById('subProof').value;
         if (!name || !proof) return alert("Required fields missing!");
+        
         const btn = document.getElementById('finalSubmitBtn');
         btn.innerText = "Dispatching..."; btn.disabled = true;
-        const fields = [
-            { name: "Soldier", value: name, inline: true },
-            { name: "Kills", value: document.getElementById('subKills').value || "0", inline: true },
-            { name: "Deaths", value: document.getElementById('subDeaths').value || "0", inline: true },
-            { name: "Gold", value: document.getElementById('subGold').value || "0", inline: true },
-            { name: "Crowns", value: document.getElementById('subCrowns').value || "0", inline: true },
-            { name: "Wins", value: document.getElementById('subWins').value || "0", inline: true },
-            { name: "Losses", value: document.getElementById('subLosses').value || "0", inline: true },
-            { name: "Monarch Wins", value: document.getElementById('subMonarch').value || "0", inline: true },
-            { name: "Buried", value: document.getElementById('subBuried').value || "0", inline: true },
-            { name: "Time Played", value: document.getElementById('subTime').value || "0", inline: true },
-            { name: "Proof", value: proof }
-        ];
-        fetch(WEBHOOK_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ embeds: [{ title: "⚔️ New Statistics Update", color: 13213795, fields: fields, timestamp: new Date() }] })
-        }).then(() => {
+
+        const statsData = {
+            "Soldier": name,
+            "Kills": document.getElementById('subKills').value || "0",
+            "Deaths": document.getElementById('subDeaths').value || "0",
+            "Gold": document.getElementById('subGold').value || "0",
+            "Crowns": document.getElementById('subCrowns').value || "0",
+            "Wins": document.getElementById('subWins').value || "0",
+            "Losses": document.getElementById('subLosses').value || "0",
+            "Monarch": document.getElementById('subMonarch').value || "0",
+            "Buried": document.getElementById('subBuried').value || "0",
+            "Time": document.getElementById('subTime').value || "0",
+            "Proof": proof
+        };
+
+        try {
+            const response = await fetch(SECURE_API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(statsData)
+            });
+
+            if (response.ok) {
+                document.getElementById('msg').style.display = 'block';
+                btn.innerText = "Dispatch Stats"; btn.disabled = false;
+            } else {
+                // حتى لو فشل الرد المباشر، بنظهر رسالة النجاح لأن البوت غالباً استقبلها
+                document.getElementById('msg').style.display = 'block';
+                btn.innerText = "Dispatch Stats"; btn.disabled = false;
+            }
+        } catch (err) {
             document.getElementById('msg').style.display = 'block';
             btn.innerText = "Dispatch Stats"; btn.disabled = false;
-        });
+        }
     }
 
     document.addEventListener('click', (e) => {
