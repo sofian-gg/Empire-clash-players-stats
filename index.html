@@ -1,11 +1,12 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Empire Clash | Imperial Military Archives</title>
     <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
     <style>
+        /* التنسيقات السينمائية */
         @keyframes siteEntrance {
             from { opacity: 0; transform: scale(0.98) translateY(30px); filter: blur(15px); }
             to { opacity: 1; transform: scale(1) translateY(0); filter: blur(0); }
@@ -50,6 +51,7 @@
 
         input { width: 100%; padding: 12px; background: #120f0a; border: 1px solid #5c4a31; color: #f0e68c; font-family: 'Cinzel', serif; margin-top: 5px; box-sizing: border-box; outline: none; }
         
+        /* قائمة الاقتراحات الذكية */
         .suggestions-list { 
             position: absolute; top: 100%; left: 0; width: 100%; 
             background: #1a1510; border: 1px solid #c9a063; 
@@ -67,6 +69,7 @@
 
         .submit-btn { width: 100%; padding: 15px; margin-top: 20px; background: linear-gradient(45deg, #8c734c, #5c4a31); color: #1a1510; border: 1px solid #c9a063; font-family: 'Cinzel', serif; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.4s; }
 
+        /* لوحة التعليمات بالخلفية الضبابية */
         #instructionsPanel { 
             position: fixed; bottom: -100%; left: 0; width: 100%; 
             background: rgba(26, 21, 16, 0.98); border-top: 3px solid #c9a063; 
@@ -119,15 +122,15 @@
         <div id="submitSection" class="section">
             <div class="form-grid">
                 <div class="full-width"><label>Roblox Username</label><input type="text" id="subName"></div>
-                <div><label>Kills</label><input type="number" id="subKills"></div>
-                <div><label>Deaths</label><input type="number" id="subDeaths"></div>
-                <div><label>Gold</label><input type="number" id="subGold"></div>
-                <div><label>Crowns</label><input type="number" id="subCrowns"></div>
-                <div><label>Wins</label><input type="number" id="subWins"></div>
-                <div><label>Losses</label><input type="number" id="subLosses"></div>
-                <div><label>Monarch Wins</label><input type="number" id="subMonarch"></div>
-                <div><label>Buried</label><input type="number" id="subBuried"></div>
-                <div class="full-width"><label>Time Played (ex: 500h)</label><input type="text" id="subTime"></div>
+                <div><label>Kills</label><input type="text" id="subKills"></div>
+                <div><label>Deaths</label><input type="text" id="subDeaths"></div>
+                <div><label>Gold</label><input type="text" id="subGold"></div>
+                <div><label>Crowns</label><input type="text" id="subCrowns"></div>
+                <div><label>Wins</label><input type="text" id="subWins"></div>
+                <div><label>Losses</label><input type="text" id="subLosses"></div>
+                <div><label>Monarch Wins</label><input type="text" id="subMonarch"></div>
+                <div><label>Buried</label><input type="text" id="subBuried"></div>
+                <div class="full-width"><label>Time Played</label><input type="text" id="subTime"></div>
                 <div class="full-width">
                     <label>Proof Link <span class="info-icon" onclick="toggleInstructions()">?</span></label>
                     <input type="text" id="subProof" placeholder="ImgBB Direct Link">
@@ -139,7 +142,7 @@
 
         <div class="footer">
             <a href="https://discord.gg/x4djQaBpnQ" target="_blank" class="discord-link">🏰 JOIN THE IMPERIAL DISCORD</a>
-            <div class="developer-credit">Developer: sofian_gg and Vitchapo</div>
+            <div class="developer-credit">Developer: sofian_gg</div>
         </div>
     </div>
 </div>
@@ -154,7 +157,9 @@
 </div>
 
 <script>
-    const SERVER_URL = "http://129.151.253.208:3000/update-stats";
+    const SHEET_ID = '1oQ4GC7sTXCikDYdQLY96CwPSUaeIoOJ3x6mYUjlZuYI';
+    const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+    const WEBHOOK_URL = "https://discord.com/api/webhooks/1482907096134455348/w5K5LenWpbxAQ3-WfIHO6UumW4-KdkQqoEg1MeuYSwy22D3aPkM_cxts0C8ngngfUfFp";
 
     let verifiedSoldiers = {};
 
@@ -174,19 +179,22 @@
 
     async function fetchStats() {
         try {
-            const response = await fetch("http://129.151.253.208:3000/get-stats");
-        
-            if (!response.ok) throw new Error('Serveur Oracle injoignable');
-        
-            const data = await response.json();
+            const response = await fetch(SHEET_URL);
+            const text = await response.text();
+            const json = JSON.parse(text.substr(47).slice(0, -2));
+            const rows = json.table.rows;
             verifiedSoldiers = {};
-            data.forEach(player => {
-                verifiedSoldiers[player.name.toLowerCase()] = player;
+            rows.forEach(row => {
+                const name = row.c[0]?.v?.toString().toLowerCase();
+                if (name && name !== "name") {
+                    verifiedSoldiers[name] = {
+                        kills: row.c[1]?.v || "0", deaths: row.c[2]?.v || "0", gold: row.c[3]?.v || "0",
+                        crowns: row.c[4]?.v || "0", wins: row.c[5]?.v || "0", losses: row.c[6]?.v || "0",
+                        time: row.c[7]?.v || "0", buried: row.c[8]?.v || "0", monarch: row.c[9]?.v || "0"
+                    };
+                }
             });
-            console.log("Archives synchronisées depuis Oracle !");
-        } catch (e) { 
-            console.error("Erreur de synchronisation : ", e.message); 
-        }
+        } catch (e) { console.error("Database sync failed."); }
     }
     fetchStats();
 
@@ -221,18 +229,15 @@
         const out = document.getElementById('statsOutput');
         if(data) {
             res.style.display = 'block';
-            let html = `<div class="stat-line"><span class="stat-label">Soldier</span><span class="stat-value" style="color:#c9a063">${data.name.toUpperCase()}</span></div>`;
-            
-            // On boucle sur les clés sauf le nom
+            let html = `<div class="stat-line"><span class="stat-label">Soldier</span><span class="stat-value" style="color:#c9a063">${input.toUpperCase()}</span></div>`;
             for (let key in data) {
-                if (key !== 'name') {
-                    html += `<div class="stat-line"><span class="stat-label">${key.toUpperCase()}</span><span class="stat-value">${data[key]}</span></div>`;
-                }
+                html += `<div class="stat-line"><span class="stat-label">${key.toUpperCase()}</span><span class="stat-value">${data[key]}</span></div>`;
             }
             out.innerHTML = html;
         } else { alert("Soldier not found!"); }
     }
 
+    // تم إضافة Losses هنا للتأكد من إرسالها للديسكورد
     function handleDispatch() {
         const name = document.getElementById('subName').value;
         const proof = document.getElementById('subProof').value;
@@ -241,35 +246,26 @@
         const btn = document.getElementById('finalSubmitBtn');
         btn.innerText = "Dispatching..."; btn.disabled = true;
 
-        const payload = {
-            name: name,
-            kills: parseInt(document.getElementById('subKills').value) || 0,
-            deaths: parseInt(document.getElementById('subDeaths').value) || 0,
-            gold: parseInt(document.getElementById('subGold').value) || 0,
-            crowns: parseInt(document.getElementById('subCrowns').value) || 0,
-            wins: parseInt(document.getElementById('subWins').value) || 0,
-            losses: parseInt(document.getElementById('subLosses').value) || 0,
-            monarch: parseInt(document.getElementById('subMonarch').value) || 0,
-            buried: parseInt(document.getElementById('subBuried').value) || 0,
-            time: document.getElementById('subTime').value || "0h",
-            proof: proof
-        };
+        const fields = [
+            { name: "Soldier", value: name, inline: true },
+            { name: "Kills", value: document.getElementById('subKills').value || "0", inline: true },
+            { name: "Deaths", value: document.getElementById('subDeaths').value || "0", inline: true },
+            { name: "Gold", value: document.getElementById('subGold').value || "0", inline: true },
+            { name: "Crowns", value: document.getElementById('subCrowns').value || "0", inline: true },
+            { name: "Wins", value: document.getElementById('subWins').value || "0", inline: true },
+            { name: "Losses", value: document.getElementById('subLosses').value || "0", inline: true }, // مصلح
+            { name: "Monarch Wins", value: document.getElementById('subMonarch').value || "0", inline: true },
+            { name: "Buried", value: document.getElementById('subBuried').value || "0", inline: true },
+            { name: "Time Played", value: document.getElementById('subTime').value || "0", inline: true },
+            { name: "Proof", value: proof }
+        ];
 
-        fetch(SERVER_URL, {
+        fetch(WEBHOOK_URL, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
-        })
-        .then(response => {
-            if (response.ok) {
-                document.getElementById('msg').style.display = 'block';
-                setTimeout(() => { document.getElementById('msg').style.display = 'none'; }, 5000);
-            } else {
-                alert("Server error. Check if your Oracle Bot is running.");
-            }
-        })
-        .catch(err => alert("Connection to Oracle server failed."))
-        .finally(() => {
+            body: JSON.stringify({ embeds: [{ title: "⚔️ New Statistics Update", color: 13213795, fields: fields, timestamp: new Date() }] })
+        }).then(() => {
+            document.getElementById('msg').style.display = 'block';
             btn.innerText = "Dispatch Stats"; btn.disabled = false;
         });
     }
