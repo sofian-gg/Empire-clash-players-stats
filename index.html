@@ -210,6 +210,13 @@
         blurTarget.style.filter = panel.classList.contains('open') ? 'blur(10px)' : 'blur(0)';
     }
 
+    // دالة لاستخراج الرقم سواء كان متخزن كرقم (.v) أو كنص (.f)
+    const getNum = (cell) => {
+        if (!cell) return 0;
+        let val = cell.v !== null && cell.v !== undefined ? cell.v : cell.f;
+        return parseFloat(val) || 0;
+    };
+
     async function fetchStats() {
         try {
             const response = await fetch(SHEET_URL);
@@ -217,26 +224,45 @@
             const json = JSON.parse(text.substr(47).slice(0, -2));
             const rows = json.table.rows;
             verifiedSoldiers = {};
+            
             rows.forEach(row => {
-                const name = row.c[0]?.v?.toString();
+                const nameCell = row.c[0];
+                const name = nameCell?.v?.toString() || nameCell?.f?.toString();
+                
                 if (name && name.toLowerCase() !== "name") {
-                    const k = parseFloat(row.c[1]?.v) || 0;
-                    const d = parseFloat(row.c[2]?.v) || 1;
-                    const w = parseFloat(row.c[5]?.v) || 0;
-                    const l = parseFloat(row.c[6]?.v) || 0;
-                    const rawTime = row.c[7]?.v?.toString() || "0";
-                    const h = parseFloat(rawTime.replace(/[^0-9.]/g, '')) || 0;
+                    const k = getNum(row.c[1]); 
+                    const d = getNum(row.c[2]) || 1; 
+                    const gold = getNum(row.c[3]);
+                    const crowns = getNum(row.c[4]);
+                    const w = getNum(row.c[5]); 
+                    const l = getNum(row.c[6]); 
+                    
+                    // التعديل هنا ليطابق صورك
+                    const timeCell = row.c[7]; // العمود H هو Time
+                    const rawTime = (timeCell?.v !== null ? timeCell?.v : timeCell?.f)?.toString() || "0";
+                    const h = parseFloat(rawTime.replace(/[^0-9.]/g, '')) || 0; 
+
+                    const bur = getNum(row.c[8]); // العمود I هو Buried
+                    const mon = getNum(row.c[9]); // العمود J هو Monarch
 
                     verifiedSoldiers[name.toLowerCase()] = {
                         originalName: name,
-                        kills: k, deaths: d, gold: parseFloat(row.c[3]?.v) || 0,
-                        crowns: parseFloat(row.c[4]?.v) || 0, wins: w, losses: l,
-                        hours: h, buried: parseFloat(row.c[8]?.v) || 0, monarch: parseFloat(row.c[9]?.v) || 0,
+                        kills: k, 
+                        deaths: d, 
+                        gold: gold,
+                        crowns: crowns, 
+                        wins: w, 
+                        losses: l,
+                        hours: h, 
+                        buried: bur, 
+                        monarch: mon,
                         kd: parseFloat((k / d).toFixed(2)),
                         winrate: parseFloat(((w / (w + l || 1)) * 100).toFixed(1))
                     };
                 }
             });
+
+            console.log("Archives Synced Successfully!");
         } catch (e) { console.error("Database sync failed."); }
     }
     fetchStats();
@@ -246,28 +272,21 @@
             document.querySelectorAll('.lb-filter-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
         }
-        
         const headerText = statKey === 'kd' ? 'K/D RATIO' : statKey === 'winrate' ? 'WIN RATE %' : statKey.toUpperCase();
         document.getElementById('lbHeader').innerText = headerText;
-
         const lbBody = document.getElementById('lbBody');
         lbBody.innerHTML = '';
 
         const sorted = Object.values(verifiedSoldiers)
             .sort((a, b) => (b[statKey] || 0) - (a[statKey] || 0))
-            .slice(0, 10);
+            .slice(0, 15);
 
         sorted.forEach((player, index) => {
             let val = player[statKey];
             if(statKey === 'winrate') val = val + "%";
             else if (typeof val === 'number') val = val.toLocaleString();
-
             const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td class="lb-rank">#${index + 1}</td>
-                <td class="lb-name">${player.originalName}</td>
-                <td class="lb-value">${val}</td>
-            `;
+            tr.innerHTML = `<td class="lb-rank">#${index + 1}</td><td class="lb-name">${player.originalName}</td><td class="lb-value">${val}</td>`;
             lbBody.appendChild(tr);
         });
     }
@@ -299,25 +318,34 @@
         const data = verifiedSoldiers[input];
         const res = document.getElementById('searchResult');
         const out = document.getElementById('statsOutput');
+        
         if(data) {
             res.style.display = 'block';
             let html = `<div class="stat-line"><span class="stat-label">Soldier</span><span class="stat-value" style="color:#c9a063">${data.originalName.toUpperCase()}</span></div>`;
-            const keysToShow = ['kills', 'deaths', 'kd', 'wins', 'losses', 'winrate', 'hours', 'gold', 'crowns', 'monarch', 'buried'];
-            keysToShow.forEach(key => {
-                let val = data[key];
-                if(key === 'winrate') val += "%";
-                html += `<div class="stat-line"><span class="stat-label">${key.toUpperCase()}</span><span class="stat-value">${val}</span></div>`;
+            const statsLayout = [
+                { label: 'KILLS', val: data.kills },
+                { label: 'DEATHS', val: data.deaths },
+                { label: 'KD', val: data.kd },
+                { label: 'WINS', val: data.wins },
+                { label: 'LOSSES', val: data.losses },
+                { label: 'WINRATE', val: data.winrate + "%" },
+                { label: 'HOURS', val: data.hours },
+                { label: 'GOLD', val: data.gold.toLocaleString() },
+                { label: 'CROWNS', val: data.crowns.toLocaleString() },
+                { label: 'MONARCH', val: data.monarch },
+                { label: 'BURIED', val: data.buried }
+            ];
+            statsLayout.forEach(s => {
+                html += `<div class="stat-line"><span class="stat-label">${s.label}</span><span class="stat-value">${s.val}</span></div>`;
             });
             out.innerHTML = html;
-        } else { alert("Soldier not found!"); }
+        } else { alert("Soldier not found in the archives!"); }
     }
 
-    // --- الجزء المعدل لإرسال البيانات بوضوح للبوت ---
     async function handleDispatch() {
         const name = document.getElementById('subName').value;
         const proof = document.getElementById('subProof').value;
         if (!name || !proof) return alert("Required fields missing!");
-        
         const btn = document.getElementById('finalSubmitBtn');
         btn.innerText = "Dispatching..."; btn.disabled = true;
 
@@ -333,9 +361,9 @@
                     { name: "Crowns", value: `\`${document.getElementById('subCrowns').value || "0"}\``, inline: true },
                     { name: "Wins", value: `\`${document.getElementById('subWins').value || "0"}\``, inline: true },
                     { name: "Losses", value: `\`${document.getElementById('subLosses').value || "0"}\``, inline: true },
-                    { name: "Monarch", value: `\`${document.getElementById('subMonarch').value || "0"}\``, inline: true },
-                    { name: "Buried", value: `\`${document.getElementById('subBuried').value || "0"}\``, inline: true },
                     { name: "Time", value: `\`${document.getElementById('subTime').value || "0"}\``, inline: true },
+                    { name: "Buried", value: `\`${document.getElementById('subBuried').value || "0"}\``, inline: true },
+                    { name: "Monarch", value: `\`${document.getElementById('subMonarch').value || "0"}\``, inline: true },
                     { name: "Proof", value: `[View Link](${proof})`, inline: false }
                 ],
                 footer: { text: "Protocol: Secure Direct Dispatch" },
@@ -343,13 +371,13 @@
             }]
         };
 
+
         try {
             const response = await fetch(DISCORD_WEBHOOK_URL, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(embedData)
             });
-
             if (response.ok) {
                 document.getElementById('msg').style.display = 'block';
                 btn.innerText = "Dispatch Stats"; btn.disabled = false;
@@ -371,5 +399,7 @@
         }
     });
 </script>
+
+
 </body>
 </html>
