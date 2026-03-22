@@ -187,11 +187,17 @@
     <span class="close-panel" onclick="toggleInstructions()">[ Return to Archives ]</span>
 </div>
 
+<!--
+    ╔══════════════════════════════════════════════╗
+    ║  CONFIGURATION — chargée depuis config.js    ║
+    ║  Ne jamais mettre les clés ici directement.  ║
+    ╚══════════════════════════════════════════════╝
+-->
+<script src="config.js"></script>
+
 <script>
-    const SHEET_ID = '1oQ4GC7sTXCikDYdQLY96CwPSUaeIoOJ3x6mYUjlZuYI';
+    // Les variables SHEET_ID et DISCORD_WEBHOOK_URL sont injectées par config.js
     const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
-    
-    const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1484373230788673587/t5GXttLtRZWkv27Ceg8CS8-vYKlr0Oy1YW7PZUHyDxnTMf-PiXR6ds3i5S5nM0SrYd-l";
 
     let verifiedSoldiers = {};
 
@@ -210,7 +216,6 @@
         blurTarget.style.filter = panel.classList.contains('open') ? 'blur(10px)' : 'blur(0)';
     }
 
-    // دالة لاستخراج الرقم سواء كان متخزن كرقم (.v) أو كنص (.f)
     const getNum = (cell) => {
         if (!cell) return 0;
         let val = cell.v !== null && cell.v !== undefined ? cell.v : cell.f;
@@ -236,26 +241,17 @@
                     const crowns = getNum(row.c[4]);
                     const w = getNum(row.c[5]); 
                     const l = getNum(row.c[6]); 
-                    
-                    // التعديل هنا ليطابق صورك
-                    const timeCell = row.c[7]; // العمود H هو Time
+                    const timeCell = row.c[7];
                     const rawTime = (timeCell?.v !== null ? timeCell?.v : timeCell?.f)?.toString() || "0";
                     const h = parseFloat(rawTime.replace(/[^0-9.]/g, '')) || 0; 
-
-                    const bur = getNum(row.c[8]); // العمود I هو Buried
-                    const mon = getNum(row.c[9]); // العمود J هو Monarch
+                    const bur = getNum(row.c[8]);
+                    const mon = getNum(row.c[9]);
 
                     verifiedSoldiers[name.toLowerCase()] = {
                         originalName: name,
-                        kills: k, 
-                        deaths: d, 
-                        gold: gold,
-                        crowns: crowns, 
-                        wins: w, 
-                        losses: l,
-                        hours: h, 
-                        buried: bur, 
-                        monarch: mon,
+                        kills: k, deaths: d, gold: gold,
+                        crowns: crowns, wins: w, losses: l,
+                        hours: h, buried: bur, monarch: mon,
                         kd: parseFloat((k / d).toFixed(2)),
                         winrate: parseFloat(((w / (w + l || 1)) * 100).toFixed(1))
                     };
@@ -355,22 +351,21 @@
                 color: 13213795,
                 description: `**Soldier:** ${name.toUpperCase()}`,
                 fields: [
-                    { name: "Kills", value: `\`${document.getElementById('subKills').value || "0"}\``, inline: true },
-                    { name: "Deaths", value: `\`${document.getElementById('subDeaths').value || "0"}\``, inline: true },
-                    { name: "Gold", value: `\`${document.getElementById('subGold').value || "0"}\``, inline: true },
-                    { name: "Crowns", value: `\`${document.getElementById('subCrowns').value || "0"}\``, inline: true },
-                    { name: "Wins", value: `\`${document.getElementById('subWins').value || "0"}\``, inline: true },
-                    { name: "Losses", value: `\`${document.getElementById('subLosses').value || "0"}\``, inline: true },
-                    { name: "Time", value: `\`${document.getElementById('subTime').value || "0"}\``, inline: true },
-                    { name: "Buried", value: `\`${document.getElementById('subBuried').value || "0"}\``, inline: true },
+                    { name: "Kills",   value: `\`${document.getElementById('subKills').value   || "0"}\``, inline: true },
+                    { name: "Deaths",  value: `\`${document.getElementById('subDeaths').value  || "0"}\``, inline: true },
+                    { name: "Gold",    value: `\`${document.getElementById('subGold').value    || "0"}\``, inline: true },
+                    { name: "Crowns",  value: `\`${document.getElementById('subCrowns').value  || "0"}\``, inline: true },
+                    { name: "Wins",    value: `\`${document.getElementById('subWins').value    || "0"}\``, inline: true },
+                    { name: "Losses",  value: `\`${document.getElementById('subLosses').value  || "0"}\``, inline: true },
+                    { name: "Time",    value: `\`${document.getElementById('subTime').value    || "0"}\``, inline: true },
+                    { name: "Buried",  value: `\`${document.getElementById('subBuried').value  || "0"}\``, inline: true },
                     { name: "Monarch", value: `\`${document.getElementById('subMonarch').value || "0"}\``, inline: true },
-                    { name: "Proof", value: `[View Link](${proof})`, inline: false }
+                    { name: "Proof",   value: `[View Link](${proof})`, inline: false }
                 ],
                 footer: { text: "Protocol: Secure Direct Dispatch" },
                 timestamp: new Date()
             }]
         };
-
 
         try {
             const response = await fetch(DISCORD_WEBHOOK_URL, {
@@ -399,7 +394,6 @@
         }
     });
 </script>
-
 
 </body>
 </html>
