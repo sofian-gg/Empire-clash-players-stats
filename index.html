@@ -198,25 +198,35 @@
     }
     fetchStats();
 
-    function updateLeaderboard(statKey, btn) {
-        if(btn) {
-            document.querySelectorAll('.lb-filter-btn').forEach(b => b.classList.remove('active'));
-            btn.classList.add('active');
-        }
-        const lbBody = document.getElementById('lbBody');
-        if (!lbBody) return;
-        lbBody.innerHTML = '';
-        
-        const sorted = Object.values(verifiedSoldiers).sort((a, b) => (b[statKey] || 0) - (a[statKey] || 0)).slice(0, 15);
-        sorted.forEach((player, index) => {
-            let val = player[statKey];
-            if(statKey === 'winrate') val = val + "%";
-            else if (typeof val === 'number') val = val.toLocaleString();
-            const tr = document.createElement('tr');
-            tr.innerHTML = `<td class="lb-rank">#${index + 1}</td><td class="lb-name">${player.originalName}</td><td class="lb-value">${val}</td>`;
-            lbBody.appendChild(tr);
-        });
+function updateLeaderboard(statKey, btn) {
+    if(btn) {
+        document.querySelectorAll('.lb-filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
     }
+    
+    // --- السطر الجديد اللي بيصلح المشكلة ---
+    const headerTitle = btn ? btn.innerText : statKey.toUpperCase();
+    document.getElementById('lbHeader').innerText = headerTitle;
+    // ---------------------------------------
+
+    const lbBody = document.getElementById('lbBody');
+    if (!lbBody) return;
+    lbBody.innerHTML = '';
+    
+    const sorted = Object.values(verifiedSoldiers).sort((a, b) => (b[statKey] || 0) - (a[statKey] || 0)).slice(0, 15);
+    sorted.forEach((player, index) => {
+        let val = player[statKey];
+        // تنسيق القيم
+        if(statKey === 'winrate') val = val + "%";
+        else if (statKey === 'kd') val = val.toFixed(2); // إضافة تنسيق الـ KD لرقمين عشريين
+        else if (typeof val === 'number') val = val.toLocaleString();
+        
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td class="lb-rank">#${index + 1}</td><td class="lb-name">${player.originalName}</td><td class="lb-value">${val}</td>`;
+        lbBody.appendChild(tr);
+    });
+}
+
 
     function handleAutocomplete() {
         const input = document.getElementById('searchName').value.toLowerCase();
