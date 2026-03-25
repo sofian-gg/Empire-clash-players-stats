@@ -41,8 +41,9 @@
         h1 { font-family: 'Cinzel', serif; color: #c9a063; letter-spacing: 5px; text-transform: uppercase; margin: 0; }
         .subtitle { font-family: 'Cinzel', serif; color: #8c734c; font-size: 0.8rem; margin-bottom: 25px; border-bottom: 1px solid #c9a063; display: inline-block; padding-bottom: 5px; }
 
-        .tabs { display: flex; gap: 5px; margin-bottom: 25px; flex-wrap: wrap; }
-        .tab-btn { flex: 1; min-width: 100px; padding: 12px; background: #1a1510; border: 1px solid #5c4a31; color: #8c734c; cursor: pointer; font-family: 'Cinzel', serif; font-size: 0.65rem; transition: 0.4s; }
+        /* تعديل التابات لتناسب زرين فقط */
+        .tabs { display: flex; gap: 10px; margin-bottom: 25px; }
+        .tab-btn { flex: 1; padding: 15px; background: #1a1510; border: 1px solid #5c4a31; color: #8c734c; cursor: pointer; font-family: 'Cinzel', serif; font-size: 0.8rem; transition: 0.4s; text-transform: uppercase; letter-spacing: 2px; }
         .tab-btn.active { background: #8c734c; color: #1a1510; font-weight: bold; }
 
         .section { display: none; text-align: left; animation: siteEntrance 0.8s ease; }
@@ -58,12 +59,6 @@
         .suggestion-item { padding: 12px; color: #c9a063; cursor: pointer; font-size: 0.85rem; border-bottom: 1px solid rgba(140, 115, 76, 0.2); }
         .suggestion-item:hover { background: #8c734c; color: #1a1510; }
 
-        .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-        .full-width { grid-column: span 2; }
-        label { font-family: 'Cinzel', serif; color: #c9a063; font-size: 0.65rem; margin-top: 10px; text-transform: uppercase; display: flex; align-items: center; justify-content: space-between; }
-        
-        .info-icon { background: #8c734c; color: #1a1510; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 11px; cursor: pointer; font-weight: bold; }
-
         .submit-btn { width: 100%; padding: 15px; margin-top: 20px; background: linear-gradient(45deg, #8c734c, #5c4a31); color: #1a1510; border: 1px solid #c9a063; font-family: 'Cinzel', serif; font-weight: bold; cursor: pointer; text-transform: uppercase; transition: 0.4s; }
 
         .leaderboard-controls { margin-bottom: 15px; display: flex; gap: 8px; overflow-x: auto; padding-bottom: 10px; border-bottom: 1px solid rgba(140, 115, 76, 0.2); }
@@ -77,21 +72,6 @@
         .lb-name { color: #dcdcdc; letter-spacing: 1px; }
         .lb-value { color: #f0e68c; text-align: right; font-weight: bold; padding-right: 15px !important; }
 
-        #instructionsPanel { 
-            position: fixed; bottom: -100%; left: 0; width: 100%; 
-            background: rgba(26, 21, 16, 0.98); border-top: 3px solid #c9a063; 
-            padding: 40px 20px; box-sizing: border-box; 
-            transition: 0.8s cubic-bezier(0.19, 1, 0.22, 1); z-index: 200;
-        }
-        #instructionsPanel.open { bottom: 0; }
-
-        .steps-container { display: flex; justify-content: center; gap: 15px; max-width: 1100px; margin: 0 auto; }
-        .step-card { flex: 1; background: rgba(0,0,0,0.4); border: 1px solid #8c734c; padding: 20px; text-align: center; }
-        .step-num { color: #c9a063; font-family: 'Cinzel', serif; font-weight: bold; display: block; margin-bottom: 10px; border-bottom: 1px solid #5c4a31; padding-bottom: 5px; }
-        .step-text { font-size: 0.75rem; color: #dcdcdc; }
-
-        .close-panel { color: #8c734c; font-size: 0.7rem; cursor: pointer; text-transform: uppercase; display: block; margin-top: 25px; text-align: center; text-decoration: underline; }
-
         .footer { margin-top: 35px; border-top: 1px solid rgba(140,115,76,0.3); padding-top: 20px; text-align: center; }
         .developer-credit { font-family: 'Cinzel', serif; font-size: 0.65rem; color: #5c4a31; text-transform: uppercase; letter-spacing: 3px; margin-top: 12px; }
         .discord-link { color: #c9a063; text-decoration: none; font-family: 'Cinzel', serif; font-weight: bold; font-size: 0.85rem; }
@@ -100,7 +80,7 @@
         .stat-label { color: #8c734c; }
         .stat-value { color: #f0e68c; font-weight: bold; }
 
-        @media (max-width: 600px) { .steps-container { flex-direction: column; } .leaderboard-controls { justify-content: flex-start; } }
+        @media (max-width: 600px) { .leaderboard-controls { justify-content: flex-start; } }
     </style>
 </head>
 <body>
@@ -111,9 +91,8 @@
         <div class="subtitle">Imperial Military Archives</div>
 
         <div class="tabs">
-            <button class="tab-btn active" id="btnSearch" onclick="showSection('search')">Search</button>
+            <button class="tab-btn active" id="btnSearch" onclick="showSection('search')">Search Archives</button>
             <button class="tab-btn" id="btnLeaderboard" onclick="showSection('leaderboard')">Leaderboards</button>
-            <button class="tab-btn" id="btnSubmit" onclick="showSection('submit')">Update</button>
         </div>
 
         <div id="searchSection" class="section active">
@@ -150,54 +129,21 @@
             </div>
         </div>
 
-        <div id="submitSection" class="section">
-            <div class="form-grid">
-                <div class="full-width"><label>Roblox Username</label><input type="text" id="subName"></div>
-                <div><label>Kills</label><input type="text" id="subKills"></div>
-                <div><label>Deaths</label><input type="text" id="subDeaths"></div>
-                <div><label>Gold</label><input type="text" id="subGold"></div>
-                <div><label>Crowns</label><input type="text" id="subCrowns"></div>
-                <div><label>Wins</label><input type="text" id="subWins"></div>
-                <div><label>Losses</label><input type="text" id="subLosses"></div>
-                <div><label>Monarch Wins</label><input type="text" id="subMonarch"></div>
-                <div><label>Buried</label><input type="text" id="subBuried"></div>
-                <div class="full-width"><label>Time Played</label><input type="text" id="subTime"></div>
-                <div class="full-width">
-                    <label>Proof Link <span class="info-icon" onclick="toggleInstructions()">?</span></label>
-                    <input type="text" id="subProof" placeholder="ImgBB Direct Link">
-                </div>
-            </div>
-            <button class="submit-btn" id="finalSubmitBtn" onclick="handleDispatch()">Dispatch Stats</button>
-            <p id="msg" style="color: #4CAF50; font-size: 0.8rem; text-align: center; margin-top: 10px; display: none;">📜 Dispatch sent to the Imperial Elders!</p>
-        </div>
-
         <div class="footer">
+<p style="font-size: 0.75rem; color: #8c734c; margin-bottom: 15px; line-height: 1.6;">
+    If you want to add or update your stats, please click on <br>
+    <b style="color: #c9a063;">"Join the Imperial Discord"</b> to join our Discord server.
+</p>
+
             <a href="https://discord.gg/x4djQaBpnQ" target="_blank" class="discord-link">🏰 JOIN THE IMPERIAL DISCORD</a>
             <div class="developer-credit">Developer: sofian_gg</div>
         </div>
     </div>
 </div>
 
-<div id="instructionsPanel">
-    <div class="steps-container">
-        <div class="step-card"><span class="step-num">Step 01</span><p class="step-text">Open <b>ImgBB.com</b> and upload your screenshot.</p></div>
-        <div class="step-card"><span class="step-num">Step 02</span><p class="step-text">Change "Embed codes" to <b>"Direct Link"</b>.</p></div>
-        <div class="step-card"><span class="step-num">Step 03</span><p class="step-text">Copy the URL and paste it in the Proof box.</p></div>
-    </div>
-    <span class="close-panel" onclick="toggleInstructions()">[ Return to Archives ]</span>
-</div>
-
-<!--
-    ╔══════════════════════════════════════════════╗
-    ║  CONFIGURATION — chargée depuis config.js    ║
-    ║  Ne jamais mettre les clés ici directement.  ║
-    ╚══════════════════════════════════════════════╝
--->
-<script src="config.js"></script>
-
 <script>
-    // Les variables SHEET_ID et DISCORD_WEBHOOK_URL sont injectées par config.js
-    const SHEET_URL = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json`;
+    const MY_SHEET_ID = "1oQ4GC7sTXCikDYdQLY96CwPSUaeIoOJ3x6mYUjlZuYI"; 
+    const SHEET_URL = `https://docs.google.com/spreadsheets/d/${MY_SHEET_ID}/gviz/tq?tqx=out:json`;
 
     let verifiedSoldiers = {};
 
@@ -209,13 +155,6 @@
         if(id === 'leaderboard') updateLeaderboard('kills');
     }
 
-    function toggleInstructions() {
-        const panel = document.getElementById('instructionsPanel');
-        const blurTarget = document.getElementById('main-blur');
-        panel.classList.toggle('open');
-        blurTarget.style.filter = panel.classList.contains('open') ? 'blur(10px)' : 'blur(0)';
-    }
-
     const getNum = (cell) => {
         if (!cell) return 0;
         let val = cell.v !== null && cell.v !== undefined ? cell.v : cell.f;
@@ -224,6 +163,7 @@
 
     async function fetchStats() {
         try {
+            console.log("جاري مزامنة الأرشيف...");
             const response = await fetch(SHEET_URL);
             const text = await response.text();
             const json = JSON.parse(text.substr(47).slice(0, -2));
@@ -235,31 +175,26 @@
                 const name = nameCell?.v?.toString() || nameCell?.f?.toString();
                 
                 if (name && name.toLowerCase() !== "name") {
-                    const k = getNum(row.c[1]); 
-                    const d = getNum(row.c[2]) || 1; 
-                    const gold = getNum(row.c[3]);
-                    const crowns = getNum(row.c[4]);
-                    const w = getNum(row.c[5]); 
-                    const l = getNum(row.c[6]); 
-                    const timeCell = row.c[7];
-                    const rawTime = (timeCell?.v !== null ? timeCell?.v : timeCell?.f)?.toString() || "0";
-                    const h = parseFloat(rawTime.replace(/[^0-9.]/g, '')) || 0; 
-                    const bur = getNum(row.c[8]);
-                    const mon = getNum(row.c[9]);
-
                     verifiedSoldiers[name.toLowerCase()] = {
                         originalName: name,
-                        kills: k, deaths: d, gold: gold,
-                        crowns: crowns, wins: w, losses: l,
-                        hours: h, buried: bur, monarch: mon,
-                        kd: parseFloat((k / d).toFixed(2)),
-                        winrate: parseFloat(((w / (w + l || 1)) * 100).toFixed(1))
+                        kills: getNum(row.c[1]), 
+                        deaths: getNum(row.c[2]) || 1, 
+                        gold: getNum(row.c[3]),
+                        crowns: getNum(row.c[4]),
+                        wins: getNum(row.c[5]), 
+                        losses: getNum(row.c[6]), 
+                        hours: parseFloat(row.c[7]?.v) || 0, 
+                        buried: getNum(row.c[8]),
+                        monarch: getNum(row.c[9]),
+                        kd: parseFloat((getNum(row.c[1]) / (getNum(row.c[2]) || 1)).toFixed(2)),
+                        winrate: parseFloat(((getNum(row.c[5]) / (getNum(row.c[5]) + getNum(row.c[6]) || 1)) * 100).toFixed(1))
                     };
                 }
             });
-
-            console.log("Archives Synced Successfully!");
-        } catch (e) { console.error("Database sync failed."); }
+            updateLeaderboard('kills');
+        } catch (e) { 
+            console.error("Fetch error:", e); 
+        }
     }
     fetchStats();
 
@@ -268,15 +203,11 @@
             document.querySelectorAll('.lb-filter-btn').forEach(b => b.classList.remove('active'));
             btn.classList.add('active');
         }
-        const headerText = statKey === 'kd' ? 'K/D RATIO' : statKey === 'winrate' ? 'WIN RATE %' : statKey.toUpperCase();
-        document.getElementById('lbHeader').innerText = headerText;
         const lbBody = document.getElementById('lbBody');
+        if (!lbBody) return;
         lbBody.innerHTML = '';
-
-        const sorted = Object.values(verifiedSoldiers)
-            .sort((a, b) => (b[statKey] || 0) - (a[statKey] || 0))
-            .slice(0, 15);
-
+        
+        const sorted = Object.values(verifiedSoldiers).sort((a, b) => (b[statKey] || 0) - (a[statKey] || 0)).slice(0, 15);
         sorted.forEach((player, index) => {
             let val = player[statKey];
             if(statKey === 'winrate') val = val + "%";
@@ -314,78 +245,20 @@
         const data = verifiedSoldiers[input];
         const res = document.getElementById('searchResult');
         const out = document.getElementById('statsOutput');
-        
         if(data) {
             res.style.display = 'block';
             let html = `<div class="stat-line"><span class="stat-label">Soldier</span><span class="stat-value" style="color:#c9a063">${data.originalName.toUpperCase()}</span></div>`;
             const statsLayout = [
-                { label: 'KILLS', val: data.kills },
-                { label: 'DEATHS', val: data.deaths },
-                { label: 'KD', val: data.kd },
-                { label: 'WINS', val: data.wins },
-                { label: 'LOSSES', val: data.losses },
-                { label: 'WINRATE', val: data.winrate + "%" },
-                { label: 'HOURS', val: data.hours },
-                { label: 'GOLD', val: data.gold.toLocaleString() },
-                { label: 'CROWNS', val: data.crowns.toLocaleString() },
-                { label: 'MONARCH', val: data.monarch },
+                { label: 'KILLS', val: data.kills }, { label: 'DEATHS', val: data.deaths },
+                { label: 'KD', val: data.kd }, { label: 'WINS', val: data.wins },
+                { label: 'LOSSES', val: data.losses }, { label: 'WINRATE', val: data.winrate + "%" },
+                { label: 'HOURS', val: data.hours }, { label: 'GOLD', val: data.gold.toLocaleString() },
+                { label: 'CROWNS', val: data.crowns.toLocaleString() }, { label: 'MONARCH', val: data.monarch },
                 { label: 'BURIED', val: data.buried }
             ];
-            statsLayout.forEach(s => {
-                html += `<div class="stat-line"><span class="stat-label">${s.label}</span><span class="stat-value">${s.val}</span></div>`;
-            });
+            statsLayout.forEach(s => { html += `<div class="stat-line"><span class="stat-label">${s.label}</span><span class="stat-value">${s.val}</span></div>`; });
             out.innerHTML = html;
         } else { alert("Soldier not found in the archives!"); }
-    }
-
-    async function handleDispatch() {
-        const name = document.getElementById('subName').value;
-        const proof = document.getElementById('subProof').value;
-        if (!name || !proof) return alert("Required fields missing!");
-        const btn = document.getElementById('finalSubmitBtn');
-        btn.innerText = "Dispatching..."; btn.disabled = true;
-
-        const embedData = {
-            embeds: [{
-                title: "🛡️ Imperial Stats Update Request",
-                color: 13213795,
-                description: `**Soldier:** ${name.toUpperCase()}`,
-                fields: [
-                    { name: "Kills",   value: `\`${document.getElementById('subKills').value   || "0"}\``, inline: true },
-                    { name: "Deaths",  value: `\`${document.getElementById('subDeaths').value  || "0"}\``, inline: true },
-                    { name: "Gold",    value: `\`${document.getElementById('subGold').value    || "0"}\``, inline: true },
-                    { name: "Crowns",  value: `\`${document.getElementById('subCrowns').value  || "0"}\``, inline: true },
-                    { name: "Wins",    value: `\`${document.getElementById('subWins').value    || "0"}\``, inline: true },
-                    { name: "Losses",  value: `\`${document.getElementById('subLosses').value  || "0"}\``, inline: true },
-                    { name: "Time",    value: `\`${document.getElementById('subTime').value    || "0"}\``, inline: true },
-                    { name: "Buried",  value: `\`${document.getElementById('subBuried').value  || "0"}\``, inline: true },
-                    { name: "Monarch", value: `\`${document.getElementById('subMonarch').value || "0"}\``, inline: true },
-                    { name: "Proof",   value: `[View Link](${proof})`, inline: false }
-                ],
-                footer: { text: "Protocol: Secure Direct Dispatch" },
-                timestamp: new Date()
-            }]
-        };
-
-        try {
-            const response = await fetch(DISCORD_WEBHOOK_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(embedData)
-            });
-            if (response.ok) {
-                document.getElementById('msg').style.display = 'block';
-                btn.innerText = "Dispatch Stats"; btn.disabled = false;
-                document.querySelectorAll('#submitSection input').forEach(i => i.value = "");
-                setTimeout(() => { document.getElementById('msg').style.display = 'none'; }, 5000);
-            } else {
-                alert("Archives transmission failed.");
-                btn.innerText = "Dispatch Stats"; btn.disabled = false;
-            }
-        } catch (err) {
-            alert("Connection Error. Check internet.");
-            btn.innerText = "Dispatch Stats"; btn.disabled = false;
-        }
     }
 
     document.addEventListener('click', (e) => {
@@ -394,6 +267,5 @@
         }
     });
 </script>
-
 </body>
 </html>
