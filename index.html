@@ -41,7 +41,6 @@
         h1 { font-family: 'Cinzel', serif; color: #c9a063; letter-spacing: 5px; text-transform: uppercase; margin: 0; }
         .subtitle { font-family: 'Cinzel', serif; color: #8c734c; font-size: 0.8rem; margin-bottom: 25px; border-bottom: 1px solid #c9a063; display: inline-block; padding-bottom: 5px; }
 
-        /* تعديل التابات لتناسب زرين فقط */
         .tabs { display: flex; gap: 10px; margin-bottom: 25px; }
         .tab-btn { flex: 1; padding: 15px; background: #1a1510; border: 1px solid #5c4a31; color: #8c734c; cursor: pointer; font-family: 'Cinzel', serif; font-size: 0.8rem; transition: 0.4s; text-transform: uppercase; letter-spacing: 2px; }
         .tab-btn.active { background: #8c734c; color: #1a1510; font-weight: bold; }
@@ -114,6 +113,8 @@
                 <button class="lb-filter-btn" onclick="updateLeaderboard('hours', this)">Hours</button>
                 <button class="lb-filter-btn" onclick="updateLeaderboard('wins', this)">Wins</button>
                 <button class="lb-filter-btn" onclick="updateLeaderboard('gold', this)">Gold</button>
+                <button class="lb-filter-btn" onclick="updateLeaderboard('crowns', this)">Crowns</button>
+                <button class="lb-filter-btn" onclick="updateLeaderboard('tournaments', this)">tournaments</button>
             </div>
             <div id="lbContainer">
                 <table class="lb-table">
@@ -130,11 +131,10 @@
         </div>
 
         <div class="footer">
-<p style="font-size: 0.75rem; color: #8c734c; margin-bottom: 15px; line-height: 1.6;">
-    If you want to add or update your stats, please click on <br>
-    <b style="color: #c9a063;">"Join the Imperial Discord"</b> to join our Discord server.
-</p>
-
+            <p style="font-size: 0.75rem; color: #8c734c; margin-bottom: 15px; line-height: 1.6;">
+                If you want to add or update your stats, please click on <br>
+                <b style="color: #c9a063;">"Join the Imperial Discord"</b> to join our Discord server.
+            </p>
             <a href="https://discord.gg/x4djQaBpnQ" target="_blank" class="discord-link">🏰 JOIN THE IMPERIAL DISCORD</a>
             <div class="developer-credit">Developer: sofian_gg</div>
         </div>
@@ -144,6 +144,9 @@
 <script>
     const MY_SHEET_ID = "1oQ4GC7sTXCikDYdQLY96CwPSUaeIoOJ3x6mYUjlZuYI"; 
     const SHEET_URL = `https://docs.google.com/spreadsheets/d/${MY_SHEET_ID}/gviz/tq?tqx=out:json`;
+    
+    // سطر 214 المعدل للسيرفر الخاص بك
+    const SECURE_API_URL = "http://212.132.120.102:15534/submit";
 
     let verifiedSoldiers = {};
 
@@ -163,7 +166,6 @@
 
     async function fetchStats() {
         try {
-            console.log("جاري مزامنة الأرشيف...");
             const response = await fetch(SHEET_URL);
             const text = await response.text();
             const json = JSON.parse(text.substr(47).slice(0, -2));
@@ -186,6 +188,7 @@
                         hours: parseFloat(row.c[7]?.v) || 0, 
                         buried: getNum(row.c[8]),
                         monarch: getNum(row.c[9]),
+                        tournaments: getNum(row.c[10]), // جلب التورنامنت من العمود K
                         kd: parseFloat((getNum(row.c[1]) / (getNum(row.c[2]) || 1)).toFixed(2)),
                         winrate: parseFloat(((getNum(row.c[5]) / (getNum(row.c[5]) + getNum(row.c[6]) || 1)) * 100).toFixed(1))
                     };
@@ -198,35 +201,31 @@
     }
     fetchStats();
 
-function updateLeaderboard(statKey, btn) {
-    if(btn) {
-        document.querySelectorAll('.lb-filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-    }
-    
-    // --- السطر الجديد اللي بيصلح المشكلة ---
-    const headerTitle = btn ? btn.innerText : statKey.toUpperCase();
-    document.getElementById('lbHeader').innerText = headerTitle;
-    // ---------------------------------------
-
-    const lbBody = document.getElementById('lbBody');
-    if (!lbBody) return;
-    lbBody.innerHTML = '';
-    
-    const sorted = Object.values(verifiedSoldiers).sort((a, b) => (b[statKey] || 0) - (a[statKey] || 0)).slice(0, 15);
-    sorted.forEach((player, index) => {
-        let val = player[statKey];
-        // تنسيق القيم
-        if(statKey === 'winrate') val = val + "%";
-        else if (statKey === 'kd') val = val.toFixed(2); // إضافة تنسيق الـ KD لرقمين عشريين
-        else if (typeof val === 'number') val = val.toLocaleString();
+    function updateLeaderboard(statKey, btn) {
+        if(btn) {
+            document.querySelectorAll('.lb-filter-btn').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
         
-        const tr = document.createElement('tr');
-        tr.innerHTML = `<td class="lb-rank">#${index + 1}</td><td class="lb-name">${player.originalName}</td><td class="lb-value">${val}</td>`;
-        lbBody.appendChild(tr);
-    });
-}
+        const headerTitle = btn ? btn.innerText : statKey.toUpperCase();
+        document.getElementById('lbHeader').innerText = headerTitle;
 
+        const lbBody = document.getElementById('lbBody');
+        if (!lbBody) return;
+        lbBody.innerHTML = '';
+        
+        const sorted = Object.values(verifiedSoldiers).sort((a, b) => (b[statKey] || 0) - (a[statKey] || 0)).slice(0, 15);
+        sorted.forEach((player, index) => {
+            let val = player[statKey];
+            if(statKey === 'winrate') val = val + "%";
+            else if (statKey === 'kd') val = val.toFixed(2);
+            else if (typeof val === 'number') val = val.toLocaleString();
+            
+            const tr = document.createElement('tr');
+            tr.innerHTML = `<td class="lb-rank">#${index + 1}</td><td class="lb-name">${player.originalName}</td><td class="lb-value">${val}</td>`;
+            lbBody.appendChild(tr);
+        });
+    }
 
     function handleAutocomplete() {
         const input = document.getElementById('searchName').value.toLowerCase();
@@ -264,6 +263,7 @@ function updateLeaderboard(statKey, btn) {
                 { label: 'LOSSES', val: data.losses }, { label: 'WINRATE', val: data.winrate + "%" },
                 { label: 'HOURS', val: data.hours }, { label: 'GOLD', val: data.gold.toLocaleString() },
                 { label: 'CROWNS', val: data.crowns.toLocaleString() }, { label: 'MONARCH', val: data.monarch },
+                { label: 'tournaments', val: data.tournaments }, // إضافة التورنامنت هنا
                 { label: 'BURIED', val: data.buried }
             ];
             statsLayout.forEach(s => { html += `<div class="stat-line"><span class="stat-label">${s.label}</span><span class="stat-value">${s.val}</span></div>`; });
